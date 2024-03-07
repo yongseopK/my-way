@@ -46,6 +46,13 @@ public class MemberService {
         return new MemberSignUpResponseDTO(save);
     }
 
+    // 이메일 중복체크 함수
+    public boolean isDuplicateEmail(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+
+
     public String uploadProfileImage(MultipartFile originalFile) throws IOException {
         // 루트 디렉토리가 존재하는지 확인 후 존재하지 않으면 생성
         File rootDir = new File(rootPath);
