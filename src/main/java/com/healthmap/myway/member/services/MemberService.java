@@ -1,8 +1,11 @@
 package com.healthmap.myway.member.services;
 
 import com.healthmap.myway.auth.TokenProvider;
+import com.healthmap.myway.auth.TokenUserInfo;
+import com.healthmap.myway.member.dto.request.MemberModifyRequestDTO;
 import com.healthmap.myway.member.dto.request.MemberSignInRequestDTO;
 import com.healthmap.myway.member.dto.request.MemberSignUpRequsetDTO;
+import com.healthmap.myway.member.dto.response.MemberModifyResponseDTO;
 import com.healthmap.myway.member.dto.response.MemberSignInResponseDTO;
 import com.healthmap.myway.member.dto.response.MemberSignUpResponseDTO;
 import com.healthmap.myway.member.entity.Member;
@@ -14,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -33,19 +38,19 @@ public class MemberService {
 
     // 회원가입 처리
     public MemberSignUpResponseDTO create(MemberSignUpRequsetDTO dto, String profilePath) {
-        if(dto == null) {
+        if (dto == null) {
             throw new RuntimeException("회원가입 입력정보가 없습니다.");
         }
         String email = dto.getEmail();
 
-        if(memberRepository.existsByEmail(email)) {
+        if (memberRepository.existsByEmail(email)) {
             log.warn("이메일이 중복되었습니다. : {}", email);
             throw new RuntimeException("중복된 이메일입니다.");
         }
 
         Member save = memberRepository.save(dto.toEntity(passwordEncoder, profilePath));
 
-        log.info("회원가입 성공 saved user - {}", save);
+        log.info("회원가입 성공 saved user - {}", save.getUserName());
 
         return new MemberSignUpResponseDTO(save);
     }
@@ -73,10 +78,56 @@ public class MemberService {
         return new MemberSignInResponseDTO(member, token);
     }
 
+    // 회원정보 수정 메서드
+    @Transactional
+    public MemberSignInResponseDTO modify(MemberModifyRequestDTO dto, TokenUserInfo userInfo, String profilePath) {
+
+        log.info("modifyDTO : {}, profilepath :{}", dto,profilePath);
+        if (dto == null && profilePath == null) {
+            throw new RuntimeException("수정된 회원정보가 없습니다.");
+        }
+        assert userInfo != null;
+        Member member = memberRepository.findByEmail(userInfo.getEmail()).orElseThrow(() -> new RuntimeException("해당 ID에 대한 계정이 없습니다."));
+        MemberModifyRequestDTO modifyRequestDTO = new MemberModifyRequestDTO(member);
+
+        log.info("정보를 수정하는 회원 이름 : {}", member.getUserName());
+        boolean flag = false;
+
+        assert dto != null;
+        if (dto.getPassword() != null) {
+            modifyRequestDTO.setPassword(dto.getPassword());
+            flag = true;
+        }
+        if (dto.getUserName() != null) {
+            modifyRequestDTO.setUserName(dto.getUserName());
+        }
+        if (dto.getWeight() != null) {
+            modifyRequestDTO.setWeight(dto.getWeight());
+        }
+        if (profilePath != null) {
+            modifyRequestDTO.setProfilePath(profilePath);
+        }
+
+        log.info("수정된 회원 dto : {}", dto);
+
+        Member saved = null;
+        if (flag) {
+            saved = memberRepository.save(modifyRequestDTO.toEntity(passwordEncoder));
+        } else {
+            saved = memberRepository.save(modifyRequestDTO.toEntity());
+        }
+
+        String token = tokenProvider.createToken(saved);
+
+        log.info("회원정보 수정 성공!! saved user - {}", saved);
+
+        return new MemberSignInResponseDTO(saved, token);
+    }
+
     public String uploadProfileImage(MultipartFile originalFile) throws IOException {
         // 루트 디렉토리가 존재하는지 확인 후 존재하지 않으면 생성
         File rootDir = new File(rootPath);
-        if(!rootDir.exists()) rootDir.mkdirs();
+        if (!rootDir.exists()) rootDir.mkdirs();
 
         // 파일의 이름을 중복될 수 없도록 변경
         String uniqueFileName = UUID.randomUUID() + "_" + originalFile.getOriginalFilename();

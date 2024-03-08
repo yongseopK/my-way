@@ -9,6 +9,10 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import java.time.LocalDate;
+
+import static com.healthmap.myway.member.entity.Member.*;
+
 
 // 회원가입 요청을 처리하는 DTO
 @Getter
@@ -32,6 +36,16 @@ public class MemberSignUpRequsetDTO {
     @Size(min = 2, max = 5)
     private String userName;
 
+    @NotBlank
+    private String gender;
+
+    @NotBlank
+    private String birthDate;
+
+    //@NotBlank
+    private double weight;
+
+
     // 요청값을 User Entity로 변환하는 코드
     public Member toEntity(PasswordEncoder passwordEncoder, String profilePath) {
         return Member.builder()
@@ -39,6 +53,9 @@ public class MemberSignUpRequsetDTO {
                 .password(passwordEncoder.encode(this.password))
                 .userName(this.userName)
                 .profileImg(profilePath)
+                .weight(this.weight)
+                .gender(Gender.fromString(this.gender))
+                .birthDate(LocalDate.parse(birthDate))
                 .build();
     }
 }

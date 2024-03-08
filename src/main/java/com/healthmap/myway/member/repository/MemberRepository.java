@@ -12,4 +12,5 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     // 이메일 중복체크 메서드
     boolean existsByEmail(String email);
+
 }

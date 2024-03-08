@@ -9,13 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -56,7 +54,7 @@ public class TokenProvider {
                 .setIssuer("운영자")               // iss : 발급자 정보
                 .setIssuedAt(new Date())            // iat : 발급 시간
                 .setExpiration(expiry)              // exp : 만료시간
-                .setSubject(memberEntity.getId())   // sub : 토큰을 식별할 수 있는 주요데이터
+                .setSubject(memberEntity.getEmail())   // sub : 토큰을 식별할 수 있는 주요데이터
                 .compact();
     }
 
@@ -77,7 +75,6 @@ public class TokenProvider {
         log.info("claims: {}", claims);
 
         return TokenUserInfo.builder()
-                .userId(claims.getSubject())
                 .email(claims.get("email", String.class))
                 .role(Member.Role.valueOf(claims.get("role", String.class)))
                 .build();
