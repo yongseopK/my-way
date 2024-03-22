@@ -2,12 +2,9 @@ package com.healthmap.myway.member.entity;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import static com.healthmap.myway.member.entity.Member.Role.*;
 
 @Builder
@@ -20,12 +17,6 @@ import static com.healthmap.myway.member.entity.Member.Role.*;
 @Table(name = "tbl_user")
 @ToString
 public class Member {
-
-    //// 회원 식별번호
-    //@Id
-    //@GeneratedValue(generator = "system-uuid")
-    //@GenericGenerator(name = "system-uuid", strategy = "uuid")
-    //private String id;
 
     // 회원 이메일(이게 로그인할 때 사용됨)
     //@Column(unique = true, nullable = false)
@@ -58,7 +49,7 @@ public class Member {
     private String profileImg;
 
     // 회원의 몸무게
-    private double weight;
+    private Double weight;
 
     // 생년월일
     private LocalDate birthDate;

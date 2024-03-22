@@ -7,9 +7,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static com.healthmap.myway.member.entity.Member.*;
 
@@ -42,20 +44,22 @@ public class MemberSignUpRequsetDTO {
     @NotBlank
     private String birthDate;
 
-    //@NotBlank
+    @NotNull
     private double weight;
 
 
     // 요청값을 User Entity로 변환하는 코드
-    public Member toEntity(PasswordEncoder passwordEncoder, String profilePath) {
+    public Member toEntity(PasswordEncoder passwordEncoder) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate parsedBirthDate = LocalDate.parse(birthDate, formatter);
+
         return Member.builder()
                 .email(this.email)
                 .password(passwordEncoder.encode(this.password))
                 .userName(this.userName)
-                .profileImg(profilePath)
                 .weight(this.weight)
                 .gender(Gender.fromString(this.gender))
-                .birthDate(LocalDate.parse(birthDate))
+                .birthDate(parsedBirthDate)
                 .build();
     }
 }

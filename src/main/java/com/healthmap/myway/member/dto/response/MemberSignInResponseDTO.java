@@ -18,7 +18,6 @@ public class MemberSignInResponseDTO {
     private String email;
     private String userName;
 
-    @JsonFormat(pattern = "yyyy년 MM월 dd일")
     private LocalDate joinDate;
 
     private String token;

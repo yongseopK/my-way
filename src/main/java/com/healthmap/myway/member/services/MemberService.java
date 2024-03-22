@@ -37,7 +37,7 @@ public class MemberService {
 
 
     // 회원가입 처리
-    public MemberSignUpResponseDTO create(MemberSignUpRequsetDTO dto, String profilePath) {
+    public MemberSignUpResponseDTO create(MemberSignUpRequsetDTO dto) {
         if (dto == null) {
             throw new RuntimeException("회원가입 입력정보가 없습니다.");
         }
@@ -48,7 +48,7 @@ public class MemberService {
             throw new RuntimeException("중복된 이메일입니다.");
         }
 
-        Member save = memberRepository.save(dto.toEntity(passwordEncoder, profilePath));
+        Member save = memberRepository.save(dto.toEntity(passwordEncoder));
 
         log.info("회원가입 성공 saved user - {}", save.getUserName());
 
