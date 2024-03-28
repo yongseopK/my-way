@@ -26,6 +26,9 @@ dependencies {
     // JPA 관련 의존성
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // MariaDB 의존성
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
     // WebFlux와 관련된 의존성
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'io.projectreactor:reactor-test'
@@ -36,6 +39,7 @@ dependencies {
 
     // Spring Boot 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
     //스프링 시큐리티 모듈
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -43,6 +47,14 @@ dependencies {
     //파일업로드 라이브러리
     implementation 'commons-io:commons-io:2.8.0'
     implementation 'commons-fileupload:commons-fileupload:1.5'
+
+    // 입력값 검증 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // json web token 라이브러리
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
     // AWS 배포를 위한 의존성
     implementation 'software.amazon.awssdk:s3:2.17.52'
