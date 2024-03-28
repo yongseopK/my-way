@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 @Builder
 public class MemberModifyRequestDTO {
 
-    @NotBlank
     private String email;
 
     private LocalDate birthDate;
